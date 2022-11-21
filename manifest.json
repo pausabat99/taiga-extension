@@ -1,0 +1,19 @@
+{
+    "manifest_version": 3,
+    "name": "Taiga Extension: Learning Dashboard",
+    "description": "Visualize metrics for Taiga project",
+    "version": "1.0",
+    "author": "Pau Sàbat Martí",
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["https://tree.taiga.io/project/*"],
+            "js": ["scripts/jquery.js", "scripts/content.js"]
+        }
+    ],
+    "permissions": [
+        "activeTab"
+    ]
+}
