@@ -50,7 +50,9 @@ function execute() {
 }
 
 function getJSON() {
-  
+  chrome.runtime.sendMessage({request: "metrics"}, function(response) {
+    console.log(response.farewell);
+  });
 }
 
 
