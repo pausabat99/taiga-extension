@@ -17,7 +17,7 @@ fetch(url,
   getTaigametrics(responseJson);
 })
 .catch((error) => {
-  console.log(error)
+  console.log(error);
 });
 
 
@@ -32,7 +32,7 @@ function getTaigametrics(json) {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.request === "metrics")
-      sendResponse({farewell: metrics});
+    if (request.query === "metrics")
+      sendResponse({message: metrics});
   }
 );
