@@ -10,10 +10,11 @@
     "content_scripts": [
         {
             "matches": ["https://tree.taiga.io/project/*"],
-            "js": ["scripts/jquery.js", "scripts/content.js"]
+            "js": ["scripts/jquery.js", "scripts/content.js"],
+            "css" : ["styles/stylesheet.css"]
         }
     ],
     "permissions": [
-        "activeTab", "storage"
+        "activeTab", "unlimitedStorage", "storage"
     ]
 }
