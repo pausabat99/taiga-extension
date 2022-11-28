@@ -1,4 +1,20 @@
 var metricsData = [];
+var globalMetrics = [];
+var personalMetrics = [];
+
+var cssId = 'myCss';  // you could encode the css path itself to generate id..
+if (!document.getElementById(cssId))
+{
+    console.log("Stylesheet loaded");
+    var head  = document.getElementsByTagName('head')[0];
+    var link  = document.createElement('link');
+    link.id   = cssId;
+    link.rel  = 'stylesheet';
+    link.type = 'text/css';
+    link.href = '../styles/stylesheet.css';
+    link.media = 'all';
+    head.appendChild(link);
+}
 
 setTimeout(() => {
   execute();
@@ -11,6 +27,8 @@ function getJSON() {
     metricsData = response.message;
   });
 }
+
+
 
 function execute() {
     const title = document.getElementsByClassName("description")[0];
@@ -26,6 +44,7 @@ function execute() {
     title.parentNode.insertBefore(metrics, title.nextSibling);
 
     button.onclick = function() {
+      button.disabled = "true";
       var timeline = document.getElementsByClassName("timeline")[0];
       var firstChild = timeline.children[0];
       firstChild.remove();
@@ -40,23 +59,63 @@ function execute() {
       timeline.appendChild(div);
 
       if (metricsData.length > 0) {
+
+        divideMetrics();
+
+        //HEADER
         var header = '<h1 id="content">Select metrics</h1>';
+        header.id = "metricsheader";
         div.innerHTML = header;
 
-        var buttonpersonal = document.createElement("button");
-        var buttonglobal = document.createElement("button");
+        //SWITCH
+        var selectordiv = document.createElement("div");
+        selectordiv.id = "selectordiv";
+        div.appendChild(selectordiv);
 
-        var choose = document.createElement("select");
-        div.appendChild(choose);
+        var togglebutton = 
+          '<label class="toggleSwitch nolabel" onclick="">' +
+            '<input id="switchmetrics" type="checkbox"/>' +
+            '<a></a>' +
+            '<span>' +
+                '<span class="left-span">Project metrics</span>' +
+                '<span class="right-span">User metrics</span>' +
+            '</span>' +
+          '</label>';
+        selectordiv.innerHTML = togglebutton;
 
-        for (let i = 0; i < metricsData.length; ++i) {
-          var option = document.createElement("option");
-          option.value = "m"+i;
-          option.innerHTML = metricsData[i]['name'];
-          choose.appendChild(option);
-        }
+        //DROP DOWN SELECTOR
+        var chooser = document.createElement("div");
+        chooser.id = "chooser";
+        selectordiv.appendChild(chooser);
 
-      } else {
+        var globaldiv = document.createElement("div");
+        var personaldiv = document.createElement("div");
+        chooser.appendChild(globaldiv);
+        chooser.appendChild(personaldiv);
+
+        getGlobalMetrics(globaldiv);
+        getPersonalMetrics(personaldiv);
+        personaldiv.style.display = 'none';
+
+        //HANDLE SWITCH
+        var toggleswitch = document.getElementById("switchmetrics");
+        toggleswitch.addEventListener('change', function () {
+          if (toggleswitch.checked) {
+            globaldiv.style.display = 'none';      // Hide global div
+            personaldiv.style.display = 'block';
+            //getPersonalMetrics(selectordiv);
+            console.log('Checked');
+          } else {
+            personaldiv.style.display = 'none';      // Hide personal div
+            globaldiv.style.display = 'block';
+            //getGlobalMetrics(selectordiv);
+            console.log('Not Checked');
+          }
+        });
+        
+      } 
+      //METRICS NOT FOUND
+      else {
         var divimage = document.createElement("div");
         divimage.className = "empty-large";
         var img = document.createElement("img");
@@ -71,6 +130,47 @@ function execute() {
     }
 }
 
+function divideMetrics() {
+  for (let i = 0; i < metricsData.length; ++i) {
+    let searchCriteria = ["acceptance_criteria_check", "closed_tasks_with_AE", "deviation_effort_estimation_simple", "pattern_check", "tasks_sd", "tasks_with_EE", "unassignedtasks"];
+    if (searchCriteria.includes(metricsData[i]['id'])) globalMetrics.push(metricsData[i]);
+    else personalMetrics.push(metricsData[i]);
+  }
+}
+
+function getGlobalMetrics(selector) {
+  console.log(globalMetrics);
+
+  var choose = document.createElement("select");
+  choose.className = "selectmetrics";
+  selector.appendChild(choose);
+
+  var defaultoption = '<option value="default" selected disabled>Choose metric...</option>';
+  choose.innerHTML = defaultoption;
+  for (let i = 0; i < globalMetrics.length; ++i) {
+    var option = document.createElement("option");
+    option.value = "m"+i;
+    option.innerHTML = globalMetrics[i]['name'];
+    choose.appendChild(option);
+  }
+}
+
+function getPersonalMetrics(selector) {
+  console.log(personalMetrics);
+
+  var choose = document.createElement("select");
+  choose.className = "selectmetrics";
+  selector.appendChild(choose);
+
+  var defaultoption = '<option value="default" selected disabled>Choose metric...</option>';
+  choose.innerHTML = defaultoption;
+  for (let i = 0; i < personalMetrics.length; ++i) {
+    var option = document.createElement("option");
+    option.value = "m"+i;
+    option.innerHTML = personalMetrics[i]['name'];
+    choose.appendChild(option);
+  }
+}
 
 
 
