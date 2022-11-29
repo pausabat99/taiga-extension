@@ -1,20 +1,9 @@
 var metricsData = [];
 var globalMetrics = [];
 var personalMetrics = [];
+var selectedMetrics = [];
 
-var cssId = 'myCss';  // you could encode the css path itself to generate id..
-if (!document.getElementById(cssId))
-{
-    console.log("Stylesheet loaded");
-    var head  = document.getElementsByTagName('head')[0];
-    var link  = document.createElement('link');
-    link.id   = cssId;
-    link.rel  = 'stylesheet';
-    link.type = 'text/css';
-    link.href = '../styles/stylesheet.css';
-    link.media = 'all';
-    head.appendChild(link);
-}
+loadheaders();
 
 setTimeout(() => {
   execute();
@@ -78,7 +67,7 @@ function execute() {
             '<a></a>' +
             '<span>' +
                 '<span class="left-span">Project metrics</span>' +
-                '<span class="right-span">User metrics</span>' +
+                '<span class="right-span">Team metrics</span>' +
             '</span>' +
           '</label>';
         selectordiv.innerHTML = togglebutton;
@@ -86,16 +75,28 @@ function execute() {
         //DROP DOWN SELECTOR
         var chooser = document.createElement("div");
         chooser.id = "chooser";
+        chooser.className = "row"
         selectordiv.appendChild(chooser);
 
         var globaldiv = document.createElement("div");
         var personaldiv = document.createElement("div");
+        globaldiv.className = "column left";
+        personaldiv.className = "column left";
         chooser.appendChild(globaldiv);
         chooser.appendChild(personaldiv);
 
         getGlobalMetrics(globaldiv);
         getPersonalMetrics(personaldiv);
         personaldiv.style.display = 'none';
+
+        var addbutton = document.createElement("button");
+        addbutton.innerText = "+ ADD METRIC";
+        addbutton.id = "addmetricsbutton";
+        addbutton.className = "column rigth btn-small";
+        addbutton.disabled = true;
+        chooser.appendChild(addbutton);
+        addbutton.addEventListener('click', addmetric);
+
 
         //HANDLE SWITCH
         var toggleswitch = document.getElementById("switchmetrics");
@@ -112,6 +113,10 @@ function execute() {
             console.log('Not Checked');
           }
         });
+
+        //SELECT METRICS WITH BUTTON AND SELECTOR
+
+
         
       } 
       //METRICS NOT FOUND
@@ -130,6 +135,36 @@ function execute() {
     }
 }
 
+function addmetric() {
+  var selected = document.getElementById("switchmetrics");
+  if (selected.checked) {
+    var selectedmetric = document.getElementById("selectpersonal").value;
+    console.log(selectedmetric);
+  }
+  else {
+    var selectedmetric = document.getElementById("selectglobal").value;
+    console.log(selectedmetric);
+  }
+}
+
+
+function loadheaders() {
+  var head  = document.getElementsByTagName('head')[0];
+  //LOAD CSS EXTENSION STYLESHEET
+  var cssId = 'myCss';
+  if (!document.getElementById(cssId))
+  {
+      var link  = document.createElement('link');
+      link.id   = cssId;
+      link.rel  = 'stylesheet';
+      link.type = 'text/css';
+      link.href = '../styles/stylesheet.css';
+      link.media = 'all';
+      head.appendChild(link);
+      console.log("Stylesheet loaded");
+  }
+}
+
 function divideMetrics() {
   for (let i = 0; i < metricsData.length; ++i) {
     let searchCriteria = ["acceptance_criteria_check", "closed_tasks_with_AE", "deviation_effort_estimation_simple", "pattern_check", "tasks_sd", "tasks_with_EE", "unassignedtasks"];
@@ -142,10 +177,11 @@ function getGlobalMetrics(selector) {
   console.log(globalMetrics);
 
   var choose = document.createElement("select");
+  choose.id = "selectglobal";
   choose.className = "selectmetrics";
   selector.appendChild(choose);
 
-  var defaultoption = '<option value="default" selected disabled>Choose metric...</option>';
+  var defaultoption = '<option value="default" selected disabled>Choose...</option>';
   choose.innerHTML = defaultoption;
   for (let i = 0; i < globalMetrics.length; ++i) {
     var option = document.createElement("option");
@@ -153,16 +189,24 @@ function getGlobalMetrics(selector) {
     option.innerHTML = globalMetrics[i]['name'];
     choose.appendChild(option);
   }
+
+  choose.addEventListener('change', function() {
+    var buttonmetrics = document.getElementById("addmetricsbutton");
+    if (choose.value != "default") {
+      buttonmetrics.disabled = false;
+    }
+  });
 }
 
 function getPersonalMetrics(selector) {
   console.log(personalMetrics);
 
   var choose = document.createElement("select");
+  choose.id = "selectpersonal";
   choose.className = "selectmetrics";
   selector.appendChild(choose);
 
-  var defaultoption = '<option value="default" selected disabled>Choose metric...</option>';
+  var defaultoption = '<option value="default" selected disabled>Choose...</option>';
   choose.innerHTML = defaultoption;
   for (let i = 0; i < personalMetrics.length; ++i) {
     var option = document.createElement("option");
@@ -170,6 +214,13 @@ function getPersonalMetrics(selector) {
     option.innerHTML = personalMetrics[i]['name'];
     choose.appendChild(option);
   }
+
+  choose.addEventListener('change', function() {
+    var buttonmetrics = document.getElementById("addmetricsbutton");
+    if (choose.value != "default") {
+      buttonmetrics.disabled = false;
+    }
+  });
 }
 
 
