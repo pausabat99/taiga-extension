@@ -104,13 +104,19 @@ function execute() {
           if (toggleswitch.checked) {
             globaldiv.style.display = 'none';      // Hide global div
             personaldiv.style.display = 'block';
-            //getPersonalMetrics(selectordiv);
-            console.log('Checked');
+            console.log('Team metrics');
+            let selector = personaldiv.firstElementChild;
+            if (selector.value == "default") {
+              addbutton.disabled = true;
+            }
           } else {
             personaldiv.style.display = 'none';      // Hide personal div
             globaldiv.style.display = 'block';
-            //getGlobalMetrics(selectordiv);
-            console.log('Not Checked');
+            console.log('Project metrics');
+            let selector = globaldiv.firstElementChild;
+            if (selector.value == "default") {
+              addbutton.disabled = true;
+            }
           }
         });
 
