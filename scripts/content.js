@@ -90,13 +90,28 @@ function execute() {
         personaldiv.style.display = 'none';
 
         var addbutton = document.createElement("button");
-        addbutton.innerText = "+ ADD METRIC";
+        addbutton.innerText = "+ ADD";
         addbutton.id = "addmetricsbutton";
         addbutton.className = "column rigth btn-small";
         addbutton.disabled = true;
         chooser.appendChild(addbutton);
         addbutton.addEventListener('click', addmetric);
 
+        //VIEW METRICS BUTTON
+        var viewbutton = document.createElement("button");
+        viewbutton.innerText = "View metrics";
+        viewbutton.id = "viewmetricsbutton";
+        viewbutton.className = "btn-big";
+        //viewbutton.disabled = true;
+        div.appendChild(viewbutton);
+        // METRICS CARDS GRID
+        var cards = document.createElement("div");
+        cards.id = "cardsDiv";
+        cards.className = "cardsDiv";
+        div.appendChild(cards);
+        //Listenes to showmetrics
+        viewbutton.addEventListener('click', showmetrics);
+        
 
         //HANDLE SWITCH
         var toggleswitch = document.getElementById("switchmetrics");
@@ -118,12 +133,7 @@ function execute() {
               addbutton.disabled = true;
             }
           }
-        });
-
-        //SELECT METRICS WITH BUTTON AND SELECTOR
-
-
-        
+        }); 
       } 
       //METRICS NOT FOUND
       else {
@@ -141,21 +151,48 @@ function execute() {
     }
 }
 
+//FUNCTIONS
+
+function showmetrics() {
+  //REMOVE PREVIOUS LOADED CARDS
+  var cardsDiv = document.getElementById("cardsDiv");
+  while (cardsDiv.lastElementChild) {
+    cardsDiv.removeChild(cardsDiv.lastElementChild);
+  }
+  for (i in selectedMetrics) {
+    var card = document.createElement("div");
+    card.className = "cardnormal";
+    card.innerHTML = 
+      '<div class="container">' +
+        '<h4><b>' + selectedMetrics[i]['name'] + '</b></h4>' +
+        '<p>' + selectedMetrics[i]['description'] + '</p>' +
+      '</div>';
+      cardsDiv.appendChild(card);
+  }
+}
+
 function addmetric() {
-  var selected = document.getElementById("switchmetrics");
-  if (selected.checked) {
-    var selectedmetric = document.getElementById("selectpersonal").value;
-    console.log(selectedmetric);
+  var switchmetrics = document.getElementById("switchmetrics");
+  if (switchmetrics.checked) {
+    var id = document.getElementById("selectpersonal").value;
+    id = id.replace('pm','');
+    if (!selectedMetrics.includes(personalMetrics[id])) {
+      selectedMetrics.push(personalMetrics[id]);
+    }  
   }
   else {
-    var selectedmetric = document.getElementById("selectglobal").value;
-    console.log(selectedmetric);
+    var id = document.getElementById("selectglobal").value;
+    id = id.replace('gm','');
+    if (!selectedMetrics.includes(globalMetrics[id])) {
+      selectedMetrics.push(globalMetrics[id]);
+    }
   }
+  console.log(selectedMetrics);
 }
 
 
 function loadheaders() {
-  var head  = document.getElementsByTagName('head')[0];
+  var head  = document.head;
   //LOAD CSS EXTENSION STYLESHEET
   var cssId = 'myCss';
   if (!document.getElementById(cssId))
@@ -191,7 +228,7 @@ function getGlobalMetrics(selector) {
   choose.innerHTML = defaultoption;
   for (let i = 0; i < globalMetrics.length; ++i) {
     var option = document.createElement("option");
-    option.value = "m"+i;
+    option.value = "gm"+i;
     option.innerHTML = globalMetrics[i]['name'];
     choose.appendChild(option);
   }
@@ -216,7 +253,7 @@ function getPersonalMetrics(selector) {
   choose.innerHTML = defaultoption;
   for (let i = 0; i < personalMetrics.length; ++i) {
     var option = document.createElement("option");
-    option.value = "m"+i;
+    option.value = "pm"+i;
     option.innerHTML = personalMetrics[i]['name'];
     choose.appendChild(option);
   }
@@ -228,6 +265,8 @@ function getPersonalMetrics(selector) {
     }
   });
 }
+
+
 
 
 
