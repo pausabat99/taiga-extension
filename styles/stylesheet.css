@@ -1,8 +1,23 @@
+#metricsDiv {
+	padding: 5px;
+}
+
+.metric_title {
+	color: #008aa8;
+}
+
+.metric_description {
+	color: #70728f;
+}
+
+.metric_value {
+	margin-top: 5px;
+}
+
 .cardsDiv {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
+	grid-template-columns: repeat(2, auto);
 	gap: 5px;
-	grid-auto-rows: 100px;
 }
 
 .cardnormal {

@@ -33,7 +33,8 @@ function execute() {
     title.parentNode.insertBefore(metrics, title.nextSibling);
 
     button.onclick = function() {
-      button.disabled = "true";
+      button.style.display = "none";
+      metrics.innerHTML = '<h2>METRICS</h2>';
       var timeline = document.getElementsByClassName("timeline")[0];
       var firstChild = timeline.children[0];
       firstChild.remove();
@@ -102,14 +103,14 @@ function execute() {
         viewbutton.innerText = "View metrics";
         viewbutton.id = "viewmetricsbutton";
         viewbutton.className = "btn-big";
-        //viewbutton.disabled = true;
+        viewbutton.disabled = true;
         div.appendChild(viewbutton);
         // METRICS CARDS GRID
         var cards = document.createElement("div");
         cards.id = "cardsDiv";
         cards.className = "cardsDiv";
         div.appendChild(cards);
-        //Listenes to showmetrics
+        //Listener to showmetrics
         viewbutton.addEventListener('click', showmetrics);
         
 
@@ -143,9 +144,12 @@ function execute() {
         img.src = "https://tree.taiga.io/v-1664173031373/images/empty/empty_tex.png";
         divimage.appendChild(img);
 
-        var message = document.createElement("p");
-        message.innerHTML = "Ooops, something went wrong. Metrics could not be loaded..."
-        img.parentNode.insertBefore(message, img.nextSibling);
+        var errormessage = document.createElement("div");
+        errormessage.innerHTML = 
+          '<h2>Ooops, something went wrong. Metrics could not be loaded...</h2>' +
+          '<p>Please try to reload page</p>';
+        divimage.appendChild(errormessage);
+
         div.appendChild(divimage);
       }
     }
@@ -164,15 +168,19 @@ function showmetrics() {
     card.className = "cardnormal";
     card.innerHTML = 
       '<div class="container">' +
-        '<h4><b>' + selectedMetrics[i]['name'] + '</b></h4>' +
-        '<p>' + selectedMetrics[i]['description'] + '</p>' +
+        '<h4 class="metric_title">' + selectedMetrics[i]['name'] + '</h4>' +
+        '<hr>' +
+        '<p class="metric_description">' + selectedMetrics[i]['description'] + '</p>' +
+        '<p class="metric_value">' + selectedMetrics[i]['value_description'] + '%</p>' +
       '</div>';
       cardsDiv.appendChild(card);
+    
   }
 }
 
 function addmetric() {
   var switchmetrics = document.getElementById("switchmetrics");
+  let viewbutton = document.getElementById("viewmetricsbutton");
   if (switchmetrics.checked) {
     var id = document.getElementById("selectpersonal").value;
     id = id.replace('pm','');
@@ -187,6 +195,7 @@ function addmetric() {
       selectedMetrics.push(globalMetrics[id]);
     }
   }
+  if (selectedMetrics.length > 0) viewbutton.disabled = false;
   console.log(selectedMetrics);
 }
 
