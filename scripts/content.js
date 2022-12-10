@@ -210,7 +210,7 @@ function loadheaders() {
       link.id   = cssId;
       link.rel  = 'stylesheet';
       link.type = 'text/css';
-      link.href = '../styles/stylesheet.css';
+      link.href = '../styles/content.css';
       link.media = 'all';
       head.appendChild(link);
       console.log("Stylesheet loaded");

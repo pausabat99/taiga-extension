@@ -1,3 +1,8 @@
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("Hello world");
+})
+
+
 var url = "http://gessi-dashboard.essi.upc.edu:8888/api/metrics/current?prj=s11a"
 var metrics = [];
 
