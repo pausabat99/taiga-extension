@@ -5,10 +5,10 @@
     "version": "1.0",
     "author": "Pau Sàbat Martí",
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "scripts/background.js"
     },
     "action": {
-        "default_popup": "popup.html"
+        "default_popup": "views/popup/popup.html"
     },
     "content_scripts": [
         {
