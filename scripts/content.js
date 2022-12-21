@@ -159,7 +159,7 @@ function execute() {
 
 function showmetrics() {
   //REMOVE PREVIOUS LOADED CARDS
-  var cardsDiv = document.getElementById("cardsDiv");
+  var cardsDiv = document.getElementById("cardsDiv"); 
   while (cardsDiv.lastElementChild) {
     cardsDiv.removeChild(cardsDiv.lastElementChild);
   }
@@ -170,13 +170,15 @@ function showmetrics() {
       '<div class="container">' +
         '<h4 class="metric_title">' + selectedMetrics[i]['name'] + '</h4>' +
         '<hr>' +
-        '<p class="metric_description">' + selectedMetrics[i]['description'] + '</p>' +
-        '<p class="metric_value">' + selectedMetrics[i]['value_description'] + '%</p>' +
+        '<div class="chart-out">' +
+          '<div class="chart-in" id="chart-in'+i+'">' +
+        '</div>' + 
       '</div>';
       cardsDiv.appendChild(card);
-    
+      creategraphicBar(i, selectedMetrics[i]['value_description']);
   }
 }
+
 
 function addmetric() {
   var switchmetrics = document.getElementById("switchmetrics");
@@ -275,7 +277,21 @@ function getPersonalMetrics(selector) {
   });
 }
 
-
+function creategraphicBar(index, metricValue) {
+  metricValue = metricValue*100;
+  let infoButton = document.createElement('label');
+  let infoText = document.createTextNode(`${metricValue}%`);
+  infoButton.classList.add("info");
+  infoButton.appendChild(infoText);
+  let barIn = document.createElement("div");
+  barIn.classList.add("bar-in");
+  barIn.style.width = `${metricValue}%`;
+  let barOut = document.createElement("div");
+  barOut.classList.add("bar-out");
+  barOut.appendChild(infoButton);
+  barOut.appendChild(barIn); 
+  document.getElementById("chart-in"+index).appendChild(barOut);
+}
 
 
 
