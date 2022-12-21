@@ -1,97 +1,154 @@
-var url = "http://gessi-dashboard.essi.upc.edu:8888/api/metrics/current?prj=s"
+//const url = "https://taiga-metrics.herokuapp.com";
+const url = "http://localhost:3000";
 var metrics = [];
+var selectedgroup = "";
+var lastCheck = "";
+
+var currentTime = new Date().getTime();
 
 
-chrome.storage.local.get('metrics', function (result) {
-  console.log("Local Storage metrics: ", result.metrics);
-  if (result.metrics != undefined) {
-    metrics = result.metrics;
+//-------LOCALSTORAGE CONTROLLERS-------//
+
+//agafar el grup del local storage i posarlo com a selected
+chrome.storage.local.get('group', function (result) {
+  if (result.group != undefined) {
+    selectedgroup = result.group;
+    console.log("Local Storage group: ", result.group);
   }
+  else console.log("No group selected");
 });
 
-chrome.storage.local.get('group', function (result) {
-  console.log("Local Storage group: ", result.group);
-  if (result.group != undefined) {
-    changeUrl(result.group);
+//AGAFAR EL CHECK AL LOCALSTORAGE
+chrome.storage.local.get('lastCheck', function (result) {
+  if (result.lastCheck != undefined) {
+    console.log("last Check was: ", result.lastCheck);
+    lastCheck = result.lastCheck;
+  }
+  else console.log("No check has ben done")
+});
+
+//AGAFAR LES MÈTRIQUES AL LOCALSTORAGE
+chrome.storage.local.get('metrics', function (result) {
+  //hi ha hagut un check
+  if (lastCheck != "") {
+    var difference = Math.abs(currentTime - lastCheck) / 3600000;
+    //s'ha de buscar mètriques a la API
+    if (difference > 86400) {
+      console.log("need to refresh metrics");
+      getmetricsfromurl();
+    }
+    //s'ha de buscar mètriques al localstorage
+    else {
+      console.log("metric are up to date");
+      if (result.metrics != undefined) {
+        console.log("Local Storage metrics: ", result.metrics);
+        metrics = result.metrics;
+      }
+    }
+  }
+  //no hi ha hagut un check, s'ha de buscar mètriques a la API
+  else {
+    console.log("No check, calling metrics API");
     getmetricsfromurl();
   }
 });
 
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-  if ("metrics" in changes) {
-    metrics = changes.metrics.newValue;
-    if (metrics != undefined) {
-      metrics.toString();
-      console.log("Mètriques canviades: ", metrics);
-    }
-  }
-  else if ("group" in changes) {
-    var group = changes.group.newValue;
-    if (group != undefined) {
-      changeUrl(group);
-      getmetricsfromurl();
-    }
-  }
-});
 
 
-function getmetricsfromurl() {
 
-  console.log("crida a la api");
+//-------LISTENERS-------//
 
-  fetch(url,
-    { method: 'GET',
-    //headers: misCabeceras,
-    mode: 'cors', // <---
-    cache: 'default'
-    }).then(function(response) {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error('Something went wrong');
-    })
-    .then(function(responseJson) {
-      console.log(responseJson);
-      getTaigametrics(responseJson);
-    })
-    .catch((error) => {
-      console.log(error);
-      metrics = []; //Group is incorrect or api does not work
-    });
-}
-
+//ENVIAR LES MÈTRIQUES SI EM PREGUNTEN
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.query === "metrics") {
+      console.log("metrics requested");
+      console.log(metrics);
+      //CANVIAR
+      //sendResponse({message: metrics[selectedgroup]});
       sendResponse({message: metrics});
     }  
   }
 );
 
+//quan hi ha un canvi al grup posarlo com a seleced
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+  if ("group" in changes) {
+    var group = changes.group.newValue;
+    if (group != undefined) {
+      console.log("There has been a group change");
+      selectedgroup = group;
+      //treure aixo
+      console.log(metrics[selectedgroup]);
+    }
+  }
+});
 
+
+
+
+
+//-------FUNCTIONS-------//
+
+//AGAFAR MÈTRIQUES DES DE LA API
+function getmetricsfromurl() {
+  console.log("API GET call");
+
+  fetch(url+'/metrics', {
+    method: 'GET'
+  })
+  .then(function(response) {
+    console.log(response);
+    if (response.ok) {
+      return response.json();
+    }
+    else if (response.status == 401) {
+      console.log("User is not logged in");
+      chrome.tabs.create({ url: url+'/auth/google' });
+    }
+    throw new Error('('+ response.status + ') '+ response.statusText);
+  })
+  .then(function(responseJson) {
+    console.log(responseJson);
+    getTaigametrics(responseJson);
+    metricsCheck();
+  })
+  .catch((error) => {
+    console.log(error);
+    //metrics = [];
+  });
+}
+
+//DEFINIR UN CHECK DE MÈTRIQUES
+function metricsCheck() {
+  newCheck = new Date().getTime();
+  chrome.storage.local.set({'lastCheck': newCheck}, function() {
+    console.log('time-check saved');
+  });
+  lastCheck = newCheck;
+}
+
+//GUARDAR LES MÈTRICQUES AL LOCALSTORAGE
+function saveMetrics() {
+  chrome.storage.local.set({'metrics': metrics}, function() {
+    console.log(metrics);
+    console.log('metrics saved');
+  });
+}
+
+
+//CLASSIFICAR I ASSIGNAR MÈTRIQUES NOMÉS DE TAIGA
+//GUARDAR AL LOCALSTORAGE
 function getTaigametrics(json) {
   metrics = [];
+  console.log(json);
   for (let index in json) {
     var id = json[index]['id'];
     if(!id.includes('commits') && !id.includes('lines')) {
       metrics.push(json[index]);
     }
   }
-  chrome.storage.local.set({'metrics': metrics}, function() {
-    console.log('metrics saved');
-});
+  saveMetrics();
 }
-
-function changeUrl(group) {
-  if (url.slice(-1) == 's') {
-    url += group;
-  }
-  else {
-    url = url.slice(0, -3);
-    url += group;
-  }
-  console.log(url);
-}
-
 

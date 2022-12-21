@@ -18,6 +18,11 @@
         }
     ],
     "permissions": [
-        "storage"
+        "tabs",
+        "storage",
+        "cookies"
+    ],
+    "host_permissions": [
+        "http://localhost:3000/*"
     ]
 }
