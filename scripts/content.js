@@ -166,9 +166,21 @@ function showmetrics() {
   for (i in selectedMetrics) {
     var card = document.createElement("div");
     card.className = "cardnormal";
+    if (selectedMetrics.length == 1) card.style.width = "auto";
     card.innerHTML = 
       '<div class="container">' +
-        '<h4 class="metric_title">' + selectedMetrics[i]['name'] + '</h4>' +
+        '<div id="titlecardsection">' +
+          '<h4 class="metric_title">' + selectedMetrics[i]['name'] + '</h4>' +
+          '<div class="dropdown">' +
+            '<button class="dropdownbutton">...</button>' +
+            '<div class="dropdown-content-hide">' +
+              '<ul>' +
+                '<li><button class="closebutton"><svg class="iconsmall"><use xlink:href="#icon-trash" attr-href="#icon-trash"></use></svg>Delete metric</button></li>' +
+                '<li><button class="infobutton"><svg class="iconsmall"><use xlink:href="#icon-help-circle" attr-href="#icon-help-circle"></use></svg><div class="popup">Show info<span class="popuptext">'+ selectedMetrics[i]['description'] +'</span></div></button></li>' +
+              '</ul>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
         '<hr>' +
         '<div class="chart-out">' +
           '<div class="chart-in" id="chart-in'+i+'">' +
@@ -176,6 +188,48 @@ function showmetrics() {
       '</div>';
       cardsDiv.appendChild(card);
       creategraphicBar(i, selectedMetrics[i]['value_description']);
+  }
+
+  var dropdownbuttons = document.getElementsByClassName("dropdownbutton");
+  for (let i = 0; i < dropdownbuttons.length; ++i) {
+    let button = dropdownbuttons[i];
+    button.addEventListener('click', function() {
+      let content = button.nextSibling;
+      if(content.className == "dropdown-content-show") {
+        content.style.animation = "fadeOut 500ms";
+        setTimeout(() => {
+          content.className ="dropdown-content-hide";
+        }, 400); 
+      }
+      else {
+        content.className = "dropdown-content-show";
+        content.style.animation = "fadeIn 500ms";
+      }
+    })
+  }
+
+  var closebuttons = document.getElementsByClassName('closebutton');
+  for (let i = 0; i < closebuttons.length; ++i) {
+    let button = closebuttons[i];
+    button.addEventListener('click', function() {
+      console.log(selectedMetrics);
+      selectedMetrics.splice(i, 1);
+      cardsDiv.children[i].style.animation = "fadeOut 500ms";
+      setTimeout(() => {
+        cardsDiv.children[i].remove();
+      }, 400);
+      console.log(selectedMetrics);
+    });
+  }
+
+  var infobuttons = document.getElementsByClassName('infobutton');
+  for (let i = 0; i < infobuttons.length; ++i) {
+    let button = infobuttons[i];
+    button.addEventListener('click', function() {
+      let popup = button.children[0].nextSibling;
+      popup = popup.children[0]
+      popup.classList.toggle("show");
+    });
   }
 }
 
@@ -238,6 +292,9 @@ function getGlobalMetrics(selector) {
   var defaultoption = '<option value="default" selected disabled>Choose...</option>';
   choose.innerHTML = defaultoption;
   for (let i = 0; i < globalMetrics.length; ++i) {
+    if (globalMetrics[i]['description'] == "") {
+      globalMetrics[i]['description'] = "No info";
+    }
     var option = document.createElement("option");
     option.value = "gm"+i;
     option.innerHTML = globalMetrics[i]['name'];

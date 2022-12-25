@@ -23,16 +23,18 @@
 }
 
 .cardnormal {
-	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+	width: 440px;
 	transition: 0.3s;
 	border-radius: 5px;
-	background-color: aliceblue;
+	border: 1px solid #d8dee9;
+	background: #fff;
 	padding: 10px;
   }
-  
+
   .cardnormal:hover {
-	box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-  }  
+	box-shadow: 4px 4px 8px rgb(216 222 233 / 50%);
+  }
+  
   
  
  /* Create two unequal columns that floats next to each other */
@@ -268,10 +270,11 @@
 	padding: 2px;
 	padding-left: 5px;
     padding-right: 5px;
-    translate: 0 -3px;
+    translate: -5px -2.75px;
 	position: absolute;
 	border: none;
 	height: 20px;
+	width: 35px;
 	font-size: 13px;
 	margin-top: 5px;
 	border-radius: 3px;
@@ -280,4 +283,136 @@
 	font-weight: bold;
   }
 
+
+  #titlecardsection {
+	display: grid;
+	grid-template-columns: 10fr 1fr;
+  }
+
+  /*---DROPDOWN---*/
+
+  .dropdown {
+	display: inline-block;
+	position: relative;
+  }
+
+  .dropdown-content-show{
+	float: left;
+	background: #fff;
+	border: 1px solid #d8dee9;
+	position: absolute;
+	width: 170px;
+	height: 85px;
+	box-shadow: 8px 8px 12px rgb(46 52 64 / 10%);
+	border-radius: 5px;
+	z-index: 1;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	display: block;
+  }
+
+  .dropdown-content-hide {
+	display: none;
+  }
+
+  @keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+  }
+
+  @keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+  }
+
+
+
+  .dropdown-content-show li {
+	margin-bottom: 10px;
+	display: list-item;
+  }
+
+  .dropdownbutton {
+	background: none;
+  }
+
+  .dropdown-content-show button {
+	background: none;
+	color: #008aa8;
+  }
+
+  .iconsmall {
+	fill: #008aa8;
+	margin-inline-end: 0.5rem;
+    margin-bottom: -1px;
+  }
+
+  .dropdown-content-show ul {
+	display: grid;
+	gap: 5x;
+  }
+
+  .popup {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+  }
   
+  /* The actual popup */
+  .popup .popuptext {
+	visibility: hidden;
+	width: 160px;
+	background-color: #555;
+	color: #fff;
+	text-align: center;
+	border-radius: 6px;
+	padding: 8px 8px;
+	position: absolute;
+	z-index: 1;
+	bottom: 125%;
+	left: 50%;
+	margin-left: -80px;
+  }
+  
+  /* Popup arrow */
+  .popup .popuptext::after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: #555 transparent transparent transparent;
+  }
+  
+  /* Toggle this class - hide and show the popup */
+  .popup .show {
+	visibility: visible;
+	-webkit-animation: fade-in 1s;
+	animation: fade-in 1s;
+  }
+  
+  /* Add animation (fade in the popup) */
+  @-webkit-keyframes fade-in {
+	from {opacity: 0;} 
+	to {opacity: 1;}
+  }
+  
+  @keyframes fade-in {
+	from {opacity: 0;}
+	to {opacity:1 ;}
+  }
