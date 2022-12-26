@@ -18,7 +18,7 @@ function getJSON() {
 }
 
 
-
+//----MAIN FUNCTION----//
 function execute() {
     const title = document.getElementsByClassName("description")[0];
 
@@ -175,8 +175,18 @@ function showmetrics() {
             '<button class="dropdownbutton">...</button>' +
             '<div class="dropdown-content-hide">' +
               '<ul>' +
-                '<li><button class="closebutton"><svg class="iconsmall"><use xlink:href="#icon-trash" attr-href="#icon-trash"></use></svg>Delete metric</button></li>' +
-                '<li><button class="infobutton"><svg class="iconsmall"><use xlink:href="#icon-help-circle" attr-href="#icon-help-circle"></use></svg><div class="popup">Show info<span class="popuptext">'+ selectedMetrics[i]['description'] +'</span></div></button></li>' +
+                '<li><button class="infobutton">' +
+                  '<svg class="iconsmall">' +
+                    '<use xlink:href="#icon-help-circle" attr-href="#icon-help-circle"></use>' +
+                  '</svg>' +
+                  '<div class="popup">' +
+                    'Metric description<span class="popuptext">'+ selectedMetrics[i]['description'] +'</span>' +
+                  '</div>'+
+                '</button></li>' +
+                '<li><button class="closebutton">' +
+                  '<svg class="iconsmall"><use xlink:href="#icon-trash" attr-href="#icon-trash"></use></svg>' +
+                  'Delete metric</button>' +
+                '</li>' +
               '</ul>' +
             '</div>' +
           '</div>' +
@@ -190,6 +200,16 @@ function showmetrics() {
       creategraphicBar(i, selectedMetrics[i]['value_description']);
   }
 
+  setupDropdownbuttons();
+  setupClosebuttons();
+  setupInfobuttons();
+}
+
+/**
+ * FUNCTIONS TO SET UP METRICS CARDS
+ */
+
+function setupDropdownbuttons() {
   var dropdownbuttons = document.getElementsByClassName("dropdownbutton");
   for (let i = 0; i < dropdownbuttons.length; ++i) {
     let button = dropdownbuttons[i];
@@ -207,7 +227,9 @@ function showmetrics() {
       }
     })
   }
+}
 
+function setupClosebuttons() {
   var closebuttons = document.getElementsByClassName('closebutton');
   for (let i = 0; i < closebuttons.length; ++i) {
     let button = closebuttons[i];
@@ -221,7 +243,9 @@ function showmetrics() {
       console.log(selectedMetrics);
     });
   }
+}
 
+function setupInfobuttons() {
   var infobuttons = document.getElementsByClassName('infobutton');
   for (let i = 0; i < infobuttons.length; ++i) {
     let button = infobuttons[i];

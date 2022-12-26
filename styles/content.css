@@ -15,7 +15,7 @@
 }
 
 .cardsDiv {
-	display: grid;
+	display: block;
 	grid-template-columns: repeat(2, auto);
 	gap: 5px;
 	padding: 10px;

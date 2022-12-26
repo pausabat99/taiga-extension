@@ -32,10 +32,11 @@ chrome.storage.local.get('metrics', function (result) {
   //hi ha hagut un check
   if (lastCheck != "") {
     var difference = Math.abs(currentTime - lastCheck) / 3600000;
+    console.log(difference);
     //s'ha de buscar mètriques a la API
-    if (difference > 86400) {
+    if (difference > 24) {
       console.log("need to refresh metrics");
-      getmetricsfromurl();
+      getmetricsfromurl(selectedgroup);
     }
     //s'ha de buscar mètriques al localstorage
     else {
@@ -49,7 +50,7 @@ chrome.storage.local.get('metrics', function (result) {
   //no hi ha hagut un check, s'ha de buscar mètriques a la API
   else {
     console.log("No check, calling metrics API");
-    getmetricsfromurl();
+    getmetricsfromurl(selectedgroup);
   }
 });
 
@@ -80,7 +81,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
       console.log("There has been a group change");
       selectedgroup = group;
       //treure aixo
-      console.log(metrics[selectedgroup]);
+      getmetricsfromurl(selectedgroup);
     }
   }
 });
@@ -92,10 +93,10 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 //-------FUNCTIONS-------//
 
 //AGAFAR MÈTRIQUES DES DE LA API
-function getmetricsfromurl() {
+function getmetricsfromurl(groupcode) {
   console.log("API GET call");
 
-  fetch(url+'/metrics', {
+  fetch(url+'/metrics/?groupcode='+ groupcode, {
     method: 'GET'
   })
   .then(function(response) {
@@ -106,6 +107,9 @@ function getmetricsfromurl() {
     else if (response.status == 401) {
       console.log("User is not logged in");
       chrome.tabs.create({ url: url+'/auth/google' });
+    }
+    else if (response.status == 400) {
+      console.log("Group code does not exist");
     }
     throw new Error('('+ response.status + ') '+ response.statusText);
   })
