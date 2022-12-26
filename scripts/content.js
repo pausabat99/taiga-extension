@@ -108,7 +108,7 @@ function execute() {
         // METRICS CARDS GRID
         var cards = document.createElement("div");
         cards.id = "cardsDiv";
-        cards.className = "cardsDiv";
+        cards.className = "cardsDivSingle";
         div.appendChild(cards);
         //Listener to showmetrics
         viewbutton.addEventListener('click', showmetrics);
@@ -163,6 +163,7 @@ function showmetrics() {
   while (cardsDiv.lastElementChild) {
     cardsDiv.removeChild(cardsDiv.lastElementChild);
   }
+  if (selectedMetrics.length > 1) cardsDiv.className = "cardsDiv";
   for (i in selectedMetrics) {
     var card = document.createElement("div");
     card.className = "cardnormal";
