@@ -3,6 +3,7 @@ const url = "http://localhost:3000";
 var metrics = [];
 var selectedgroup = "";
 var lastCheck = "";
+var groupName = "";
 
 var currentTime = new Date().getTime();
 
@@ -16,6 +17,15 @@ chrome.storage.local.get('group', function (result) {
     console.log("Local Storage group: ", result.group);
   }
   else console.log("No group selected");
+});
+
+//agafar el nom del grup del local storage
+chrome.storage.local.get('groupname', function (result) {
+  if (result.groupname != undefined) {
+    groupName = result.groupname;
+    console.log("Local Storage group name: ", result.groupname);
+  }
+  else console.log("No group name");
 });
 
 //AGAFAR EL CHECK AL LOCALSTORAGE
@@ -49,8 +59,11 @@ chrome.storage.local.get('metrics', function (result) {
   }
   //no hi ha hagut un check, s'ha de buscar mètriques a la API
   else {
-    console.log("No check, calling metrics API");
-    getmetricsfromurl(selectedgroup);
+    if (selectedgroup != "") {
+      console.log("No check, calling metrics API");
+      getmetricsfromurl(selectedgroup);
+    }
+    console.log("No group selected, can't call API");
   }
 });
 
@@ -66,10 +79,18 @@ chrome.runtime.onMessage.addListener(
     if (request.query === "metrics") {
       console.log("metrics requested");
       console.log(metrics);
-      //CANVIAR
-      //sendResponse({message: metrics[selectedgroup]});
       sendResponse({message: metrics});
     }  
+    else if (request.query == "groupname") {
+      console.log("group name requested");
+      console.log(groupName);
+      sendResponse({message: groupName});
+    }
+    else if (request.query == "group") {
+      console.log("group requested");
+      console.log(selectedgroup);
+      sendResponse({message: selectedgroup});
+    }
   }
 );
 
@@ -85,9 +106,6 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
     }
   }
 });
-
-
-
 
 
 //-------FUNCTIONS-------//
@@ -120,7 +138,8 @@ function getmetricsfromurl(groupcode) {
   })
   .catch((error) => {
     console.log(error);
-    //metrics = [];
+    metrics = [];
+    saveMetrics();
   });
 }
 
@@ -141,12 +160,20 @@ function saveMetrics() {
   });
 }
 
+//GUARDAR EL GROUPNAME AL LOCALSTORAGE
+function saveGroupName() {
+  chrome.storage.local.set({'groupname': groupName}, function() {
+    console.log(groupName);
+    console.log('group name saved');
+  });
+}
 
 //CLASSIFICAR I ASSIGNAR MÈTRIQUES NOMÉS DE TAIGA
 //GUARDAR AL LOCALSTORAGE
-function getTaigametrics(json) {
+function getTaigametrics(metricsJSON) {
   metrics = [];
-  console.log(json);
+  //console.log(metricsJSON);
+  let json = metricsJSON.metrics;
   for (let index in json) {
     var id = json[index]['id'];
     if(!id.includes('commits') && !id.includes('lines')) {
@@ -154,5 +181,8 @@ function getTaigametrics(json) {
     }
   }
   saveMetrics();
+
+  groupName = metricsJSON.groupname;
+  saveGroupName();
 }
 

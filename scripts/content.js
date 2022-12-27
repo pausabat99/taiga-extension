@@ -2,6 +2,8 @@ var metricsData = [];
 var globalMetrics = [];
 var personalMetrics = [];
 var selectedMetrics = [];
+var groupName = "";
+var group = "";
 
 loadheaders();
 
@@ -9,7 +11,7 @@ setTimeout(() => {
   execute();
 }, "6000")
 
-function getJSON() {
+function getMetricsJSON() {
   chrome.runtime.sendMessage({query: "metrics"}, function(response) {
     //Treure aquest console.log
     console.log(response.message);
@@ -17,12 +19,31 @@ function getJSON() {
   });
 }
 
+function getSelectedGroupName() {
+  chrome.runtime.sendMessage({query: "groupname"}, function(response) {
+    console.log(response.message);
+    groupName = response.message;
+  })
+}
+
+function getSelectedGroup() {
+  chrome.runtime.sendMessage({query: "group"}, function(response) {
+    console.log(response.message);
+    group = response.message;
+  })
+}
+
 
 //----MAIN FUNCTION----//
 function execute() {
-    const title = document.getElementsByClassName("description")[0];
+    const description = document.getElementsByClassName("description")[0];
+    const projectName = document.getElementsByClassName("project-name")[0];
 
-    getJSON();
+    var realprojectname = projectName.childNodes[0].data;
+
+    getMetricsJSON();
+    getSelectedGroup();
+    getSelectedGroupName();
 
     var metrics = document.createElement("div");
     var button = document.createElement("button");
@@ -30,7 +51,7 @@ function execute() {
     button.innerHTML = "METRICS";
     metrics.appendChild(button);
 
-    title.parentNode.insertBefore(metrics, title.nextSibling);
+    description.parentNode.insertBefore(metrics, description.nextSibling);
 
     button.onclick = function() {
       button.style.display = "none";
@@ -42,13 +63,9 @@ function execute() {
       var div = document.createElement("div");
       div.id = "metricsDiv";
 
-      //DESCOMENTA PER VERUE QUE PASSA SI NO HI HA METRIQUES DISPONIBLES
-      //metricsData = [];
-      //console.log(metricsData);
-
       timeline.appendChild(div);
-
-      if (metricsData.length > 0) {
+      
+      if (metricsData.length > 0 && realprojectname.includes(groupName)) {
 
         divideMetrics();
 
@@ -145,9 +162,21 @@ function execute() {
         divimage.appendChild(img);
 
         var errormessage = document.createElement("div");
-        errormessage.innerHTML = 
-          '<h2>Ooops, something went wrong. Metrics could not be loaded...</h2>' +
-          '<p>Please try to reload page</p>';
+        if (group == "") {
+          errormessage.innerHTML =
+            '<h2>Ooops, something went wrong. Group not selected...</h2>' +
+            '<p>Please select group and reaload page</p>';
+        }
+        else if (metricsData.length == 0) {
+          errormessage.innerHTML = 
+            '<h2>Ooops, something went wrong. Metrics could not be loaded...</h2>' +
+            '<p>Please try to reload page</p>';
+        }
+        else if (!realprojectname.includes(groupName) && groupName != projectName) {
+          errormessage.innerHTML =
+            '<h2>Ooops, something went wrong. You do not have permissions to see these metrics...</h2>' +
+            '<p>Please select your group and reaload page</p>';
+        }
         divimage.appendChild(errormessage);
 
         div.appendChild(divimage);
