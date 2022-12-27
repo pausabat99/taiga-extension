@@ -47,7 +47,8 @@ function execute() {
 
     var metrics = document.createElement("div");
     var button = document.createElement("button");
-    button.setAttribute("id", "metricsButton");
+    button.id = "metricsButton";
+    button.className = "btn-small";
     button.innerHTML = "METRICS";
     metrics.appendChild(button);
 
@@ -122,6 +123,7 @@ function execute() {
         viewbutton.className = "btn-big";
         viewbutton.disabled = true;
         div.appendChild(viewbutton);
+
         // METRICS CARDS GRID
         var cards = document.createElement("div");
         cards.id = "cardsDiv";
@@ -343,7 +345,7 @@ function getGlobalMetrics(selector) {
   choose.className = "selectmetrics";
   selector.appendChild(choose);
 
-  var defaultoption = '<option value="default" selected disabled>Choose...</option>';
+  var defaultoption = '<option value="default" selected disabled>Choose metric...</option>';
   choose.innerHTML = defaultoption;
   for (let i = 0; i < globalMetrics.length; ++i) {
     if (globalMetrics[i]['description'] == "") {

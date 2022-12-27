@@ -1,3 +1,13 @@
+#viewmetricsbutton {
+	margin-left: 10px;
+    margin-top: 5px;
+	margin-bottom: 15px;
+}
+
+#addmetricsbutton {
+	margin-top: 10px;
+}
+
 #metricsDiv {
 	padding: 5px;
 }
@@ -70,13 +80,14 @@
 } 
 
 .toggleSwitch {
+	margin-left: 10px;
 	display: inline-block;
 	height: 18px;
 	position: relative;
 	overflow: visible;
 	padding: 0;
 	cursor: pointer;
-	width: 70%;
+	width: 82%;
 	background-color: #fafafa;
 	border: 1px solid #ccc;
 	border-radius:5px;
