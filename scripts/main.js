@@ -37,7 +37,9 @@ function getSelectedGroup() {
 //----MAIN FUNCTION----//
 function execute() {
     const description = document.getElementsByClassName("description")[0];
-    const projectName = document.getElementsByClassName("project-name")[0];
+    var projectName = document.getElementsByClassName("project-name")[0];
+
+    projectName.style.minWidth = "270px";
 
     var realprojectname = projectName.childNodes[0].data;
 
@@ -262,7 +264,7 @@ function setupDropdownbuttons() {
 }
 
 function setupClosebuttons() {
-  var closebuttons = document.getElementsByClassName('closebutton');
+  var closebuttons = document.getElementsByClassName("closebutton");
   for (let i = 0; i < closebuttons.length; ++i) {
     let button = closebuttons[i];
     button.addEventListener('click', function() {
@@ -322,7 +324,7 @@ function loadheaders() {
       link.id   = cssId;
       link.rel  = 'stylesheet';
       link.type = 'text/css';
-      link.href = '../../styles/content.css';
+      link.href = '../../styles/main.css';
       link.media = 'all';
       head.appendChild(link);
       console.log("Stylesheet loaded");

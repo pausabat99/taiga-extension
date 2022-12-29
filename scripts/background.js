@@ -7,68 +7,81 @@ var groupName = "";
 
 var currentTime = new Date().getTime();
 
+getLocalCheck();
+getLocalGroupCode();
+getLocalGroupName();
+getLocalMetrics();
+
 
 //-------LOCALSTORAGE CONTROLLERS-------//
 
 //agafar el grup del local storage i posarlo com a selected
-chrome.storage.local.get('group', function (result) {
-  if (result.group != undefined) {
-    selectedgroup = result.group;
-    console.log("Local Storage group: ", result.group);
-  }
-  else console.log("No group selected");
-});
+function getLocalGroupCode() {
+  chrome.storage.local.get('group', function (result) {
+    if (result.group != undefined) {
+      selectedgroup = result.group;
+      console.log("Local Storage group: ", result.group);
+    }
+    else console.log("No group selected");
+  });
+}
+
 
 //agafar el nom del grup del local storage
-chrome.storage.local.get('groupname', function (result) {
-  if (result.groupname != undefined) {
-    groupName = result.groupname;
-    console.log("Local Storage group name: ", result.groupname);
-  }
-  else console.log("No group name");
-});
+function getLocalGroupName() {
+  chrome.storage.local.get('groupname', function (result) {
+    if (result.groupname != undefined) {
+      groupName = result.groupname;
+      console.log("Local Storage group name: ", result.groupname);
+    }
+    else console.log("No group name");
+  });
+}
+
 
 //AGAFAR EL CHECK AL LOCALSTORAGE
-chrome.storage.local.get('lastCheck', function (result) {
-  if (result.lastCheck != undefined) {
-    console.log("last Check was: ", result.lastCheck);
-    lastCheck = result.lastCheck;
-  }
-  else console.log("No check has ben done")
-});
+function getLocalCheck() {
+  chrome.storage.local.get('lastCheck', function (result) {
+    if (result.lastCheck != undefined) {
+      console.log("last Check was: ", result.lastCheck);
+      lastCheck = result.lastCheck;
+    }
+    else console.log("No check has ben done")
+  });
+}
+
 
 //AGAFAR LES MÈTRIQUES AL LOCALSTORAGE
-chrome.storage.local.get('metrics', function (result) {
-  //hi ha hagut un check
-  if (lastCheck != "") {
-    var difference = Math.abs(currentTime - lastCheck) / 3600000;
-    console.log(difference);
-    //s'ha de buscar mètriques a la API
-    if (difference > 24) {
-      console.log("need to refresh metrics");
-      getmetricsfromurl(selectedgroup);
-    }
-    //s'ha de buscar mètriques al localstorage
-    else {
-      console.log("metric are up to date");
-      if (result.metrics != undefined) {
-        console.log("Local Storage metrics: ", result.metrics);
-        metrics = result.metrics;
+function getLocalMetrics() {
+  chrome.storage.local.get('metrics', function (result) {
+    //hi ha hagut un check
+    if (lastCheck != "") {
+      var difference = Math.abs(currentTime - lastCheck) / 3600000;
+      console.log(difference);
+      //s'ha de buscar mètriques a la API
+      if (difference > 24) {
+        console.log("need to refresh metrics");
+        getmetricsfromurl(selectedgroup);
+      }
+      //s'ha de buscar mètriques al localstorage
+      else {
+        console.log("metric are up to date");
+        if (result.metrics != undefined) {
+          console.log("Local Storage metrics: ", result.metrics);
+          metrics = result.metrics;
+        }
       }
     }
-  }
-  //no hi ha hagut un check, s'ha de buscar mètriques a la API
-  else {
-    if (selectedgroup != "") {
-      console.log("No check, calling metrics API");
-      getmetricsfromurl(selectedgroup);
+    //no hi ha hagut un check, s'ha de buscar mètriques a la API
+    else {
+      if (selectedgroup != "") {
+        console.log("No check, calling metrics API");
+        getmetricsfromurl(selectedgroup);
+      }
+      console.log("No group selected, can't call API");
     }
-    console.log("No group selected, can't call API");
-  }
-});
-
-
-
+  });
+}
 
 
 //-------LISTENERS-------//
@@ -79,29 +92,31 @@ chrome.runtime.onMessage.addListener(
     if (request.query === "metrics") {
       console.log("metrics requested");
       console.log(metrics);
+      if (metrics.length == 0) getLocalMetrics();
       sendResponse({message: metrics});
     }  
     else if (request.query == "groupname") {
       console.log("group name requested");
       console.log(groupName);
+      if (groupName == "") getLocalGroupName();
       sendResponse({message: groupName});
     }
     else if (request.query == "group") {
       console.log("group requested");
       console.log(selectedgroup);
+      if (selectedgroup == "") getLocalGroupCode();
       sendResponse({message: selectedgroup});
     }
   }
 );
 
-//quan hi ha un canvi al grup posarlo com a seleced
+//quan hi ha un canvi al grup posarlo com a selected
 chrome.storage.onChanged.addListener(function(changes, namespace) {
   if ("group" in changes) {
     var group = changes.group.newValue;
     if (group != undefined) {
       console.log("There has been a group change");
       selectedgroup = group;
-      //treure aixo
       getmetricsfromurl(selectedgroup);
     }
   }

@@ -32,8 +32,8 @@
 
 .cardsDiv {
 	display: grid;
-	grid-template-columns: repeat(2, auto);
-	gap: 5px;
+	grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+	gap: 12px;
 	padding: 10px;
     margin-top: 10px;
 }
@@ -281,6 +281,9 @@
 	border-top-left-radius: inherit;
     border-bottom-left-radius: inherit;
 	width: 100%;
+	display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .info{
 	z-index: 10;
@@ -318,8 +321,8 @@
 	background: #fff;
 	border: 1px solid #d8dee9;
 	position: absolute;
-	width: 170px;
-	height: 85px;
+	width: 200px;
+	height: 80px;
 	box-shadow: 8px 8px 12px rgb(46 52 64 / 10%);
 	border-radius: 5px;
 	z-index: 1;
