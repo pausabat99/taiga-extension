@@ -228,7 +228,10 @@ function showmetrics() {
         '<hr>' +
         '<div class="chart-out">' +
           '<div class="chart-in" id="chart-in'+i+'">' +
-        '</div>' + 
+        '</div>' +
+        '<div class="datesection">' +
+          '<p>Date of calculation: ' + selectedMetrics[i]['date'] + '</p>'
+        '</div>'
       '</div>';
       cardsDiv.appendChild(card);
       creategraphicBar(i, selectedMetrics[i]['value_description']);
@@ -273,6 +276,7 @@ function setupClosebuttons() {
       cardsDiv.children[i].style.animation = "fadeOut 500ms";
       setTimeout(() => {
         cardsDiv.children[i].remove();
+        if (selectedMetrics.length < 2) cardsDiv.className = "cardsDivSingle";
       }, 400);
       console.log(selectedMetrics);
     });

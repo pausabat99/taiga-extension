@@ -1,3 +1,9 @@
+.datesection {
+	text-align: center;
+	padding: 10px;
+	font-size: 15px;
+}
+
 #viewmetricsbutton {
 	margin-left: 10px;
     margin-top: 5px;
@@ -39,7 +45,6 @@
 }
 
 .cardnormal {
-	width: 440px;
 	transition: 0.3s;
 	border-radius: 5px;
 	border: 1px solid #d8dee9;
@@ -92,7 +97,7 @@
 	border: 1px solid #ccc;
 	border-radius:5px;
 	height:34px;
-        user-select: none;
+    user-select: none;
 }
 .toggleSwitch * {
 	-webkit-box-sizing: border-box;
@@ -147,7 +152,7 @@
 	opacity: 1;
 	width:40%;
 	text-align: center;
-        line-height:34px;
+    line-height:34px;
 }
 
 .toggleSwitch a {
