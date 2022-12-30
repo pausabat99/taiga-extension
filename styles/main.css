@@ -1,7 +1,7 @@
 .datesection {
 	text-align: center;
-	padding: 10px;
 	font-size: 15px;
+	margin-top: 20px;
 }
 
 #viewmetricsbutton {
@@ -263,7 +263,6 @@
 
   .chart-out{
 	max-width: 500px;
-	padding: 15px 0;
 	margin: 0 auto;
   }
   .chart-in{

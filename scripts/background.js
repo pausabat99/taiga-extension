@@ -143,10 +143,6 @@ function getmetricsfromurl(groupcode) {
     if (response.ok) {
       return response.json();
     }
-    else if (response.status == 401) {
-      console.log("User is not logged in");
-      chrome.tabs.create({ url: url+'/auth/google' });
-    }
     else if (response.status == 400) {
       console.log("Group code does not exist");
     }

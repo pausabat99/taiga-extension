@@ -202,7 +202,7 @@ function showmetrics() {
     card.className = "cardnormal";
     if (selectedMetrics.length == 1) card.style.width = "auto";
     card.innerHTML = 
-      '<div class="container">' +
+      '<div>' +
         '<div id="titlecardsection">' +
           '<h4 class="metric_title">' + selectedMetrics[i]['name'] + '</h4>' +
           '<div class="dropdown">' +
