@@ -7,10 +7,12 @@ var groupName = "";
 
 var currentTime = new Date().getTime();
 
+logIn();
 getLocalCheck();
 getLocalGroupCode();
 getLocalGroupName();
 getLocalMetrics();
+
 
 
 //-------LOCALSTORAGE CONTROLLERS-------//
@@ -66,9 +68,13 @@ function getLocalMetrics() {
       //s'ha de buscar mètriques al localstorage
       else {
         console.log("metric are up to date");
-        if (result.metrics != undefined) {
+        if (result.metrics != undefined && result.metrics > 0) {
           console.log("Local Storage metrics: ", result.metrics);
           metrics = result.metrics;
+        }
+        else {
+          console.log("metrics not found, calling API");
+          getmetricsfromurl(selectedgroup);
         }
       }
     }
@@ -199,5 +205,31 @@ function getTaigametrics(metricsJSON) {
 
   groupName = metricsJSON.groupname;
   saveGroupName();
+}
+
+//LOGIN A LA API
+function logIn() {
+  console.log("API GET call login");
+
+  fetch(url+'/login', {
+    method: 'GET'
+  })
+  .then(function(response) {
+    console.log(response);
+    if (response.ok) {
+      console.log("loged in")
+    }
+    else if (response.status == 401) {
+      console.log("User is not logged in");
+      chrome.tabs.create({ url: url+'/auth/google' });
+    }
+    throw new Error('('+ response.status + ') '+ response.statusText);
+  })
+  .then(function(responseJson) {
+    console.log(responseJson);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 }
 
