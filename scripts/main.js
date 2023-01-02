@@ -7,13 +7,29 @@ var group = "";
 
 loadheaders();
 
+
 setTimeout(() => {
+  getMetricsJSON();
+  getSelectedGroupName();
+  getSelectedGroup();
   execute();
-}, "6000")
+}, "6000");
+
+
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if (request.query === "metricsRecieved") {
+      console.log(request.data, request.dataname);
+      metricsData = request.data;
+      groupName = request.dataname;
+    }
+  }
+);
+
 
 function getMetricsJSON() {
   chrome.runtime.sendMessage({query: "metrics"}, function(response) {
-    //Treure aquest console.log
     console.log(response.message);
     metricsData = response.message;
   });
@@ -23,14 +39,14 @@ function getSelectedGroupName() {
   chrome.runtime.sendMessage({query: "groupname"}, function(response) {
     console.log(response.message);
     groupName = response.message;
-  })
+  });
 }
 
 function getSelectedGroup() {
   chrome.runtime.sendMessage({query: "group"}, function(response) {
     console.log(response.message);
     group = response.message;
-  })
+  });
 }
 
 
@@ -43,10 +59,7 @@ function execute() {
 
     var realprojectname = projectName.childNodes[0].data;
 
-    getMetricsJSON();
-    getSelectedGroup();
-    getSelectedGroupName();
-
+   
     var metrics = document.createElement("div");
     var button = document.createElement("button");
     button.id = "metricsButton";
@@ -166,20 +179,21 @@ function execute() {
         divimage.appendChild(img);
 
         var errormessage = document.createElement("div");
+        var reloadpage = '<a href="#" onClick="window.location.reload();return false;">reload page</a>';
         if (group == "") {
           errormessage.innerHTML =
             '<h2>Ooops, something went wrong. Group not selected...</h2>' +
-            '<p>Please select group and reaload page</p>';
+            '<p>Please select a group and ' + reloadpage + '</p>';
         }
         else if (metricsData.length == 0) {
           errormessage.innerHTML = 
             '<h2>Ooops, something went wrong. Metrics could not be loaded...</h2>' +
-            '<p>Please try to reload page</p>';
+            '<p>Please try to ' + reloadpage + '</p>';
         }
         else if (!realprojectname.includes(groupName) && groupName != projectName) {
           errormessage.innerHTML =
             '<h2>Ooops, something went wrong. You do not have permissions to see these metrics...</h2>' +
-            '<p>Please select your group and reaload page</p>';
+            '<p>Please select your group and ' + reloadpage + '</p>';
         }
         divimage.appendChild(errormessage);
 

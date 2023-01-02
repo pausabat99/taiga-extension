@@ -4,15 +4,46 @@ var metrics = [];
 var selectedgroup = "";
 var lastCheck = "";
 var groupName = "";
+var extensionTab = "";
 
 var currentTime = new Date().getTime();
 
-logIn();
+
+
 getLocalCheck();
 getLocalGroupCode();
 getLocalGroupName();
 getLocalMetrics();
 
+
+//-------LISTENERS-------//
+
+//ENVIAR LES MÈTRIQUES SI EM PREGUNTEN
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if (request.query === "metrics") {
+      console.log("metrics requested", metrics);
+      if (metrics.length == 0) getLocalMetrics();
+      sendResponse({message: metrics});
+    }  
+    else if (request.query == "groupname") {
+      console.log("group name requested", groupName);
+      if (groupName == "") getLocalGroupName();
+      sendResponse({message: groupName});
+    }
+    else if (request.query == "group") {
+      console.log("group requested", selectedgroup);
+      if (selectedgroup == "") getLocalGroupCode();
+      sendResponse({message: selectedgroup});
+    }
+  }
+);
+
+function sendMetricswhenObtained() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.sendMessage(tabs[0].id, {query: "metricsRecieved", data: metrics, dataname: groupName});  
+  });
+}
 
 
 //-------LOCALSTORAGE CONTROLLERS-------//
@@ -67,7 +98,8 @@ function getLocalMetrics() {
       }
       //s'ha de buscar mètriques al localstorage
       else {
-        console.log("metric are up to date");
+        console.log("metrics are up to date");
+        console.log(result.etrics);
         if (result.metrics != undefined && result.metrics > 0) {
           console.log("Local Storage metrics: ", result.metrics);
           metrics = result.metrics;
@@ -90,31 +122,7 @@ function getLocalMetrics() {
 }
 
 
-//-------LISTENERS-------//
 
-//ENVIAR LES MÈTRIQUES SI EM PREGUNTEN
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    if (request.query === "metrics") {
-      console.log("metrics requested");
-      console.log(metrics);
-      if (metrics.length == 0) getLocalMetrics();
-      sendResponse({message: metrics});
-    }  
-    else if (request.query == "groupname") {
-      console.log("group name requested");
-      console.log(groupName);
-      if (groupName == "") getLocalGroupName();
-      sendResponse({message: groupName});
-    }
-    else if (request.query == "group") {
-      console.log("group requested");
-      console.log(selectedgroup);
-      if (selectedgroup == "") getLocalGroupCode();
-      sendResponse({message: selectedgroup});
-    }
-  }
-);
 
 //quan hi ha un canvi al grup posarlo com a selected
 chrome.storage.onChanged.addListener(function(changes, namespace) {
@@ -146,12 +154,18 @@ function getmetricsfromurl(groupcode) {
     else if (response.status == 400) {
       console.log("Group code does not exist");
     }
+    else if (response.status == 401) {
+      logIn();
+    }
     throw new Error('('+ response.status + ') '+ response.statusText);
   })
   .then(function(responseJson) {
     console.log(responseJson);
-    getTaigametrics(responseJson);
-    metricsCheck();
+    if (responseJson.metrics.length > 0) {
+      getTaigametrics(responseJson);
+      metricsCheck();
+    }
+    else console.log("metrics response was empty")
   })
   .catch((error) => {
     console.log(error);
@@ -201,6 +215,7 @@ function getTaigametrics(metricsJSON) {
 
   groupName = metricsJSON.groupname;
   saveGroupName();
+  sendMetricswhenObtained();
 }
 
 //LOGIN A LA API
