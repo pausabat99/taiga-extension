@@ -9,7 +9,7 @@ var extensionTab = "";
 var currentTime = new Date().getTime();
 
 
-
+//get varables from localStorage
 getLocalCheck();
 getLocalGroupCode();
 getLocalGroupName();

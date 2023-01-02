@@ -1,8 +1,10 @@
 #popup {
     display: inline-block;
 }
+
+
 #selectheader {
-    align-self: center;
+    text-align: center;
     color: #008aa8;
     margin-bottom: 0;
     font-family: Arial,Helvetica,sans-serif;

@@ -6,12 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
             chrome.storage.local.set({'group': button.value}, function() {});
         });
     });
-
-    let loginbutton = document.getElementById('login');
-    loginbutton.addEventListener("click", function() {
-        chrome.tabs.create({url: $(this).attr('href')});
-    });
-    
+        
 });
 
 
