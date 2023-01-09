@@ -4,6 +4,8 @@ var personalMetrics = [];
 var selectedMetrics = [];
 var groupName = "";
 var group = "";
+var notlogged = false;
+var isUser = false;
 
 loadheaders();
 
@@ -13,6 +15,7 @@ setTimeout(() => {
   getSelectedGroupName();
   getSelectedGroup();
   getSelectedMetrics();
+  checkuser();
   execute();
 }, "6000");
 
@@ -39,6 +42,24 @@ chrome.runtime.onMessage.addListener(
     }
   }
 );
+
+function checkuser() {
+  var avatar = document.getElementsByClassName("user-avatar")[0];
+  if (avatar != undefined) {
+    var username = avatar.children[0].title;
+    console.log("logged user", username);
+    var team = document.getElementsByClassName("involved-team")[0].children;
+    let found = false;
+    for (let i = 0; i < team.length && !found; ++i) {
+      let potentialuser = team[i].children[0];
+      let potentialusername = potentialuser.title;
+      if (potentialusername == username) found = true;
+    }
+    if (found) isUser = true;
+  }
+  else notlogged = true;
+  console.log(isUser);
+}
 
 
 function getMetricsJSON() {
@@ -101,7 +122,7 @@ function execute() {
 
       timeline.appendChild(div);
       
-      if (metricsData.length > 0 && realprojectname.includes(groupName)) {
+      if (isUser && metricsData.length > 0 && realprojectname.includes(groupName)) {
 
         divideMetrics();
 
