@@ -1,5 +1,5 @@
-//const url = "https://taiga-metrics.herokuapp.com";
-const url = "http://localhost:3000";
+//const url = "http://localhost:3000";
+const url = "https://taiga-metrics.herokuapp.com";
 var metrics = [];
 var selectedgroup = "";
 var lastCheck = "";
@@ -23,18 +23,27 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.query === "metrics") {
       console.log("metrics requested", metrics);
-      if (metrics.length == 0) getLocalMetrics();
-      sendResponse({message: metrics});
+      if (metrics.length == 0) {
+        sendResponse({message: ""});
+        getLocalMetrics();
+      }
+      else sendResponse({message: metrics});
     }  
-    else if (request.query == "groupname") {
+    else if (request.query === "groupname") {
       console.log("group name requested", groupName);
-      if (groupName == "") getLocalGroupName();
-      sendResponse({message: groupName});
+      if (groupName == "") {
+        sendResponse({message: ""});
+        getLocalGroupName();
+      }
+      else sendResponse({message: groupName});
     }
-    else if (request.query == "group") {
+    else if (request.query === "group") {
       console.log("group requested", selectedgroup);
-      if (selectedgroup == "") getLocalGroupCode();
-      sendResponse({message: selectedgroup});
+      if (selectedgroup == "") {
+        sendResponse({message: ""});
+        getLocalGroupCode();
+      }
+      else sendResponse({message: selectedgroup});
     }
   }
 );
@@ -42,6 +51,18 @@ chrome.runtime.onMessage.addListener(
 function sendMetricswhenObtained() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
     chrome.tabs.sendMessage(tabs[0].id, {query: "metricsRecieved", data: metrics, dataname: groupName});  
+  });
+}
+
+function sendGroupName() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.sendMessage(tabs[0].id, {query: "groupNameRecieved", data: groupName});  
+  });
+}
+
+function sendGroupCode() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.sendMessage(tabs[0].id, {query: "groupCodeRecieved", data: selectedgroup});  
   });
 }
 
@@ -54,6 +75,7 @@ function getLocalGroupCode() {
     if (result.group != undefined) {
       selectedgroup = result.group;
       console.log("Local Storage group: ", result.group);
+      sendGroupCode();
     }
     else console.log("No group selected");
   });
@@ -66,6 +88,7 @@ function getLocalGroupName() {
     if (result.groupname != undefined) {
       groupName = result.groupname;
       console.log("Local Storage group name: ", result.groupname);
+      sendGroupName();
     }
     else console.log("No group name");
   });
@@ -99,8 +122,8 @@ function getLocalMetrics() {
       //s'ha de buscar mètriques al localstorage
       else {
         console.log("metrics are up to date");
-        console.log(result.etrics);
-        if (result.metrics != undefined && result.metrics > 0) {
+        console.log(result.metrics);
+        if (result.metrics != undefined && result.metrics.length > 0) {
           console.log("Local Storage metrics: ", result.metrics);
           metrics = result.metrics;
         }
@@ -221,26 +244,6 @@ function getTaigametrics(metricsJSON) {
 //LOGIN A LA API
 function logIn() {
   console.log("API GET call login");
-
-  fetch(url+'/login', {
-    method: 'GET'
-  })
-  .then(function(response) {
-    console.log(response);
-    if (response.ok) {
-      console.log("loged in")
-    }
-    else if (response.status == 401) {
-      console.log("User is not logged in");
-      chrome.tabs.create({ url: url+'/auth/google' });
-    }
-    throw new Error('('+ response.status + ') '+ response.statusText);
-  })
-  .then(function(responseJson) {
-    console.log(responseJson);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+  chrome.tabs.create({ url: url });
 }
 

@@ -24,6 +24,14 @@ chrome.runtime.onMessage.addListener(
       metricsData = request.data;
       groupName = request.dataname;
     }
+    else if (request.query === "groupNameRecieved") {
+      console.log(request.data);
+      groupName = request.data;
+    }
+    else if (request.query === "groupCodeRecieved") {
+      console.log(request.data);
+      group = request.data;
+    }
   }
 );
 
@@ -101,7 +109,7 @@ function execute() {
             '<a></a>' +
             '<span>' +
                 '<span class="left-span">Project metrics</span>' +
-                '<span class="right-span">Team metrics</span>' +
+                '<span class="right-span">Team user metrics</span>' +
             '</span>' +
           '</label>';
         selectordiv.innerHTML = togglebutton;
@@ -393,7 +401,7 @@ function getPersonalMetrics(selector) {
   choose.className = "selectmetrics";
   selector.appendChild(choose);
 
-  var defaultoption = '<option value="default" selected disabled>Choose...</option>';
+  var defaultoption = '<option value="default" selected disabled>Choose metric...</option>';
   choose.innerHTML = defaultoption;
   for (let i = 0; i < personalMetrics.length; ++i) {
     var option = document.createElement("option");
