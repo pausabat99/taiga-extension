@@ -4,10 +4,33 @@
 	margin-top: 20px;
 }
 
-#viewmetricsbutton {
-	margin-left: 10px;
-    margin-top: 5px;
+.buttonsdiv {
+	display: inline-block;
+	margin-top: 5px;
 	margin-bottom: 15px;
+}
+
+.presets {
+	width: 750px;
+    justify-content: center;
+    display: flex;
+	margin-left: 10px;
+	margin-bottom: 10px;
+	grid-gap: 10px;
+	justify-items: center;
+	align-items: center;
+}
+
+#optionsdiv {
+	grid-template-columns: 180px 180px;
+}
+
+#presetsdiv {
+	grid-template-columns: 180px 180px 180px;
+}
+
+.presets button {
+	width: 180px;
 }
 
 #addmetricsbutton {
@@ -31,17 +54,17 @@
 }
 
 .cardsDivSingle {
+	border-top: 1px solid #e2e3e9;
 	display: block;
 	padding: 10px;
-    margin-top: 10px;
 }
 
 .cardsDiv {
+	border-top: 1px solid #e2e3e9;
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
 	gap: 12px;
 	padding: 10px;
-    margin-top: 10px;
 }
 
 .cardnormal {

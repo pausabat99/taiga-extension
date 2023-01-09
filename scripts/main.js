@@ -12,6 +12,7 @@ setTimeout(() => {
   getMetricsJSON();
   getSelectedGroupName();
   getSelectedGroup();
+  getSelectedMetrics();
   execute();
 }, "6000");
 
@@ -25,12 +26,16 @@ chrome.runtime.onMessage.addListener(
       groupName = request.dataname;
     }
     else if (request.query === "groupNameRecieved") {
-      console.log(request.data);
+      console.log("Group name: ", request.data);
       groupName = request.data;
     }
     else if (request.query === "groupCodeRecieved") {
-      console.log(request.data);
+      console.log("Group code: ", request.data);
       group = request.data;
+    }
+    else if (request.query === "selectedMetricsRecieved") {
+      console.log("selected metrics", selectedMetrics);
+      selectedmetrics = request.data;
     }
   }
 );
@@ -38,22 +43,29 @@ chrome.runtime.onMessage.addListener(
 
 function getMetricsJSON() {
   chrome.runtime.sendMessage({query: "metrics"}, function(response) {
-    console.log(response.message);
+    console.log("metrics", response.message);
     metricsData = response.message;
   });
 }
 
 function getSelectedGroupName() {
   chrome.runtime.sendMessage({query: "groupname"}, function(response) {
-    console.log(response.message);
+    console.log("group name", response.message);
     groupName = response.message;
   });
 }
 
 function getSelectedGroup() {
   chrome.runtime.sendMessage({query: "group"}, function(response) {
-    console.log(response.message);
+    console.log("group code", response.message);
     group = response.message;
+  });
+}
+
+function getSelectedMetrics() {
+  chrome.runtime.sendMessage({query: "selectedmetrics"}, function(response) {
+    console.log("selcted metrics", response.message);
+    selectedMetrics = response.message;
   });
 }
 
@@ -139,22 +151,73 @@ function execute() {
         chooser.appendChild(addbutton);
         addbutton.addEventListener('click', addmetric);
 
+        var buttonsdiv = document.createElement("div");
+        buttonsdiv.className = "buttonsdiv";
+        div.appendChild(buttonsdiv);
+
+        var presetsdiv = document.createElement("div");
+        presetsdiv.className = "presets";
+        presetsdiv.id = "presetsdiv";
+        buttonsdiv.appendChild(presetsdiv);
+
+        var optionsdiv = document.createElement("div");
+        optionsdiv.className = "presets";
+        optionsdiv.id = "optionsdiv";
+        buttonsdiv.appendChild(optionsdiv);
+
         //VIEW METRICS BUTTON
         var viewbutton = document.createElement("button");
         viewbutton.innerText = "View metrics";
         viewbutton.id = "viewmetricsbutton";
         viewbutton.className = "btn-big";
         viewbutton.disabled = true;
-        div.appendChild(viewbutton);
+        presetsdiv.appendChild(viewbutton);
+
+        //PRESET GLOBAL METRICS
+        var presetglobal = document.createElement("button");
+        presetglobal.innerText = "ALL PROJECT METRICS";
+        presetglobal.id = "presetglobalbutton";
+        presetglobal.className = "btn-big";
+        presetsdiv.appendChild(presetglobal);
+
+        //PRESET TEAMUSER METRICS
+        var presetpersonal = document.createElement("button");
+        presetpersonal.innerText = "ALL TEAM USER METRICS";
+        presetpersonal.id = "presetpersonalbutton";
+        presetpersonal.className = "btn-big";
+        presetsdiv.appendChild(presetpersonal);
+
+        //BREAK LINE
+        var breakline = document.createElement("br");
+        div.appendChild(breakline);
+
+        //DELETE ALL METRICS
+        var presetdelete = document.createElement("button");
+        presetdelete.innerText = "DELETE ALL";
+        presetdelete.id = "presetdeletebutton";
+        presetdelete.className = "btn-big";
+        optionsdiv.appendChild(presetdelete);
+
+        //SAVE METRICS
+        var savemetrics = document.createElement("button");
+        savemetrics.innerText = "SAVE METRICS";
+        savemetrics.id = "presetsavebutton";
+        savemetrics.className = "btn-big";
+        optionsdiv.appendChild(savemetrics);
 
         // METRICS CARDS GRID
         var cards = document.createElement("div");
         cards.id = "cardsDiv";
         cards.className = "cardsDivSingle";
         div.appendChild(cards);
-        //Listener to showmetrics
-        viewbutton.addEventListener('click', showmetrics);
         
+        
+        //BUTTONS LISTENERS
+        viewbutton.addEventListener('click', showmetrics);
+        presetglobal.addEventListener('click', selectGlobalPreset);
+        presetpersonal.addEventListener('click', selectPersonalPreset);
+        presetdelete.addEventListener('click', deleteallselected);
+        savemetrics.addEventListener('click', saveselectedmetrics);
 
         //HANDLE SWITCH
         var toggleswitch = document.getElementById("switchmetrics");
@@ -176,7 +239,9 @@ function execute() {
               addbutton.disabled = true;
             }
           }
-        }); 
+        });
+
+        if (selectedMetrics.length > 0) showmetrics();
       } 
       //METRICS NOT FOUND
       else {
@@ -415,6 +480,38 @@ function getPersonalMetrics(selector) {
     if (choose.value != "default") {
       buttonmetrics.disabled = false;
     }
+  });
+}
+
+function selectGlobalPreset() {
+  concatenateSelected(globalMetrics);
+  showmetrics();
+}
+
+function selectPersonalPreset() {
+  concatenateSelected(personalMetrics);
+  showmetrics();
+}
+
+function concatenateSelected(arrayofmetrics) {
+  if (selectedMetrics.length == 0) {
+    selectedMetrics = selectedMetrics.concat(arrayofmetrics);
+  }
+  else {
+    let arrayaux = selectedMetrics.concat(arrayofmetrics);
+    arrayaux = [...new Set([...selectedMetrics,...arrayofmetrics])];
+    selectedMetrics = arrayaux;
+  }
+}
+
+function deleteallselected() {
+  selectedMetrics = [];
+  showmetrics();
+}
+
+function saveselectedmetrics() {
+  chrome.runtime.sendMessage({query: "saveselectedmetrics", data: selectedMetrics}, function(response) {
+    console.log(response.message);
   });
 }
 

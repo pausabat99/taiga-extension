@@ -18,7 +18,7 @@
         },
         {
             "matches": ["https://tree.taiga.io/project/*/taskboard/*"],
-            "js": ["scripts/jquery.js", "scripts/sprint.js"],
+            "js": ["scripts/jquery.js"],
             "css": ["styles/main.css"]
         }
     ],

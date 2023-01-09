@@ -5,6 +5,7 @@ var selectedgroup = "";
 var lastCheck = "";
 var groupName = "";
 var extensionTab = "";
+var selectedmetrics = [];
 
 var currentTime = new Date().getTime();
 
@@ -24,7 +25,7 @@ chrome.runtime.onMessage.addListener(
     if (request.query === "metrics") {
       console.log("metrics requested", metrics);
       if (metrics.length == 0) {
-        sendResponse({message: ""});
+        sendResponse({message: []});
         getLocalMetrics();
       }
       else sendResponse({message: metrics});
@@ -45,8 +46,26 @@ chrome.runtime.onMessage.addListener(
       }
       else sendResponse({message: selectedgroup});
     }
+    else if (request.query === "selectedmetrics") {
+      console.log("selected metrics requested", selectedmetrics);
+      if (selectedmetrics.length == 0) {
+        sendResponse({message: []});
+        getlocalselectedmetrics();
+      }
+      else sendResponse({message: selectedmetrics});
+    }
+    else if (request.query === "saveselectedmetrics") {
+      saveselectedmetrics(request.data);
+    }
   }
 );
+
+function saveselectedmetrics(selected) {
+  selectedmetrics = selected;
+  chrome.storage.local.set({'selectedmetrics': selected}, function() {
+    console.log('Selected metrics saved: ', selected);
+  });
+}
 
 function sendMetricswhenObtained() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
@@ -66,6 +85,11 @@ function sendGroupCode() {
   });
 }
 
+function sendSelectedMetrics() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.sendMessage(tabs[0].id, {query: "selectedMetricsRecieved", data: selectedmetrics});  
+  });
+}
 
 //-------LOCALSTORAGE CONTROLLERS-------//
 
@@ -102,8 +126,21 @@ function getLocalCheck() {
       console.log("last Check was: ", result.lastCheck);
       lastCheck = result.lastCheck;
     }
-    else console.log("No check has ben done")
+    else console.log("No check has ben done");
   });
+}
+
+
+//AGAFAR LES MÈTRIQUES SELECCIONADES
+function getlocalselectedmetrics() {
+  chrome.storage.local.get('selectedmetrics', function (result) {
+    if (result.selectedmetrics != undefined && result.selectedmetrics.length > 0) {
+      console.log("Local Storage selected metrics: ", result.selectedmetrics);
+      selectedmetrics = result.selectedmetrics;
+      sendSelectedMetrics();
+    }
+    else console.log("No selected metrics");
+  })
 }
 
 
