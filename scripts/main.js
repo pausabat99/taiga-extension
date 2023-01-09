@@ -196,6 +196,7 @@ function execute() {
         presetdelete.innerText = "DELETE ALL";
         presetdelete.id = "presetdeletebutton";
         presetdelete.className = "btn-big";
+        presetdelete.disabled = true;
         optionsdiv.appendChild(presetdelete);
 
         //SAVE METRICS
@@ -203,6 +204,7 @@ function execute() {
         savemetrics.innerText = "SAVE METRICS";
         savemetrics.id = "presetsavebutton";
         savemetrics.className = "btn-big";
+        savemetrics.disabled = true;
         optionsdiv.appendChild(savemetrics);
 
         // METRICS CARDS GRID
@@ -278,12 +280,24 @@ function execute() {
 //FUNCTIONS
 
 function showmetrics() {
+  var deletebutton = document.getElementById("presetdeletebutton");
+  var savebutton = document.getElementById("presetsavebutton");
   //REMOVE PREVIOUS LOADED CARDS
   var cardsDiv = document.getElementById("cardsDiv"); 
   while (cardsDiv.lastElementChild) {
     cardsDiv.removeChild(cardsDiv.lastElementChild);
   }
-  if (selectedMetrics.length > 1) cardsDiv.className = "cardsDiv";
+  if (selectedMetrics.length > 1) {
+    cardsDiv.className = "cardsDiv";
+  }
+  if (selectedMetrics.length >= 1) {
+    deletebutton.disabled = false;
+    savebutton.disabled = false;
+  }
+  else {
+    deletebutton.disabled = true;
+    savebutton.disabled = true;
+  }
   for (i in selectedMetrics) {
     var card = document.createElement("div");
     card.className = "cardnormal";
@@ -366,6 +380,7 @@ function setupClosebuttons() {
         if (selectedMetrics.length < 2) cardsDiv.className = "cardsDivSingle";
       }, 400);
       console.log(selectedMetrics);
+      checkifselected();
     });
   }
 }
@@ -506,7 +521,19 @@ function concatenateSelected(arrayofmetrics) {
 
 function deleteallselected() {
   selectedMetrics = [];
+  checkifselected();
   showmetrics();
+}
+
+function checkifselected() {
+  var viewbutton = document.getElementById("viewmetricsbutton");
+  var deletebutton = document.getElementById("presetdeletebutton");
+  var savebutton = document.getElementById("presetsavebutton");
+  if (selectedMetrics.length == 0) {
+    viewbutton.disabled = true;
+    deletebutton.disabled = true;
+    savebutton.disabled = true;
+  }
 }
 
 function saveselectedmetrics() {
