@@ -1,20 +1,39 @@
 {
     "manifest_version": 3,
-    "name": "Taiga Extension: Learning Dashboard",
-    "description": "Visualize metrics for Taiga project",
+    "name": "Taiga Metrics",
+    "description": "Visualize metrics for Taiga project. Select between Project metrics or Team member metrics. This kind of data shows the average of a specific calculation. These calculations are computed by the Learning Dashboard software, which is property of GESSI department onwed by UPC. Therefore, metrics are only visible for those users who own a upc.edu mail domain.",
     "version": "1.0",
     "author": "Pau Sàbat Martí",
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "scripts/background.js"
+    },
+    "action": {
+        "default_popup": "views/popup/popup.html"
     },
     "content_scripts": [
         {
-            "matches": ["https://tree.taiga.io/project/*"],
-            "js": ["scripts/jquery.js", "scripts/content.js"],
-            "css" : ["styles/stylesheet.css"]
+            "matches": ["https://tree.taiga.io/project/*/timeline"],
+            "js": ["scripts/jquery.js", "scripts/main.js"],
+            "css" : ["styles/main.css"]
+        },
+        {
+            "matches": ["https://tree.taiga.io/project/*/taskboard/*"],
+            "js": ["scripts/jquery.js"],
+            "css": ["styles/main.css"]
         }
     ],
     "permissions": [
-        "activeTab", "unlimitedStorage", "storage"
-    ]
+        "tabs",
+        "storage",
+        "cookies"
+    ],
+    "host_permissions": [
+        "http://localhost:3000/*",
+        "https://taiga-metrics.herokuapp.com/*"
+    ],
+    "icons": { 
+        "16": "icons/16x16.png",
+        "48": "icons/48x48.png",
+        "128": "icons/128x128.png" 
+    }
 }
