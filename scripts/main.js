@@ -57,7 +57,10 @@ function checkuser() {
     }
     if (found) isUser = true;
   }
-  else notlogged = true;
+  else {
+    notlogged = true;
+    isUser = false;
+  }
   console.log(isUser);
 }
 
@@ -108,6 +111,7 @@ function execute() {
     button.innerHTML = "METRICS";
     metrics.appendChild(button);
 
+
     description.parentNode.insertBefore(metrics, description.nextSibling);
 
     button.onclick = function() {
@@ -116,13 +120,16 @@ function execute() {
       var timeline = document.getElementsByClassName("timeline")[0];
       var firstChild = timeline.children[0];
       firstChild.remove();
+      if (notlogged) {
+        timeline.children[0].remove();
+      }
 
       var div = document.createElement("div");
       div.id = "metricsDiv";
 
       timeline.appendChild(div);
       
-      if (isUser && metricsData.length > 0 && realprojectname.includes(groupName)) {
+      if (!notlogged && isUser && metricsData.length > 0 && realprojectname.includes(groupName)) {
 
         divideMetrics();
 
@@ -276,23 +283,33 @@ function execute() {
 
         var errormessage = document.createElement("div");
         var reloadpage = '<a href="#" onClick="window.location.reload();return false;">reload page</a>';
-        if (group == "") {
+
+        if (notlogged) {
+          errormessage.innerHTML =
+            '<h2>Ooops, something went wrong. You do not have permissions to see these metrics...</h2>' +
+            '<p>Please log in Taiga and try again</p>';
+        }
+        else if (!isUser) {
+          errormessage.innerHTML =
+            '<h2>Ooops, something went wrong. You do not have permissions to see these metrics...</h2>' +
+            '<p>Please visit a Taiga project you belong and try again</p>';
+        }
+        else if (group == "") {
           errormessage.innerHTML =
             '<h2>Ooops, something went wrong. Group not selected...</h2>' +
             '<p>Please select a group and ' + reloadpage + '</p>';
-        }
-        else if (metricsData.length == 0) {
-          errormessage.innerHTML = 
-            '<h2>Ooops, something went wrong. Metrics could not be loaded...</h2>' +
-            '<p>Please try to ' + reloadpage + '</p>';
         }
         else if (!realprojectname.includes(groupName) && groupName != projectName) {
           errormessage.innerHTML =
             '<h2>Ooops, something went wrong. You do not have permissions to see these metrics...</h2>' +
             '<p>Please select your group and ' + reloadpage + '</p>';
         }
+        else if (metricsData.length == 0) {
+          errormessage.innerHTML = 
+            '<h2>Ooops, something went wrong. Metrics could not be loaded...</h2>' +
+            '<p>Please try to ' + reloadpage + '</p>';
+        }
         divimage.appendChild(errormessage);
-
         div.appendChild(divimage);
       }
     }

@@ -192,6 +192,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
       console.log("There has been a group change");
       selectedgroup = group;
       getmetricsfromurl(selectedgroup);
+      sendGroupName();
     }
   }
 });
