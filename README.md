@@ -1,1 +1,1 @@
-# taiga-extension v1.0
+# taiga-extension v1.1
