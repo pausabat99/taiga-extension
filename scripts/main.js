@@ -589,6 +589,7 @@ function creategraphicBar(index, metricValue) {
   let barIn = document.createElement("div");
   barIn.classList.add("bar-in");
   barIn.style.width = `${metricValue}%`;
+  if (metricValue == 100) barIn.style.borderRadius = 'inherit';
   let barOut = document.createElement("div");
   barOut.classList.add("bar-out");
   barOut.appendChild(infoButton);
