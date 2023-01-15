@@ -15,11 +15,6 @@
             "matches": ["https://tree.taiga.io/project/*/timeline"],
             "js": ["scripts/jquery.js", "scripts/main.js"],
             "css" : ["styles/main.css"]
-        },
-        {
-            "matches": ["https://tree.taiga.io/project/*/taskboard/*"],
-            "js": ["scripts/jquery.js"],
-            "css": ["styles/main.css"]
         }
     ],
     "permissions": [
